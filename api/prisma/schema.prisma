@@ -1,0 +1,105 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  Int             @id @default(autoincrement())
+  personalId          String          @unique
+  matriculationNumber String?         @unique
+  firstName           String
+  lastName            String
+  dateOfBirth         DateTime
+  gender              String
+  email               String          @unique
+  phoneNumber         String
+  city                String?
+  address             String?
+  role                String
+  rolesId             Int
+  isDeleted           Boolean         @default(false)
+  password            String
+  enrolledDegree      String?
+  currentSemester     String?
+  academicYear        String?
+  Grades              Grades[]
+  Subjects            Subject[]       @relation("UserSubjects")
+  TaughtSubjects      Subject[]       @relation("UserTaughtSubjects")
+  Notifications       Notifications[] @relation("UserNotifications")
+  Roles               Roles           @relation(fields: [rolesId], references: [id])
+
+  @@index([rolesId])
+}
+
+model Roles {
+  id   Int    @id @default(autoincrement())
+  role String @unique
+  User User[]
+}
+
+model Degree {
+  id            Int          @id @default(autoincrement())
+  degree        String
+  lengthInYears Int
+  Subject       Subject[]
+  Timetable     Timetables[]
+}
+
+model Subject {
+  id        Int      @id @default(autoincrement())
+  subject   String
+  credits   Float
+  degreeId  Int
+  semester  String
+  degree    Degree   @relation(fields: [degreeId], references: [id])
+  Grades    Grades[]
+  Users     User[]   @relation("UserSubjects")
+  Lecturers User[]   @relation("UserTaughtSubjects")
+}
+
+model Grades {
+  id           Int     @id @default(autoincrement())
+  midtermGrade Int?
+  seminarGrade Int?
+  finalGrade   Int?
+  subjectId    Int
+  userId       Int
+  subject      Subject @relation(fields: [subjectId], references: [id])
+  user         User    @relation(fields: [userId], references: [id])
+}
+
+model Notifications {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  viewed    Boolean   @default(false)
+  viewedAt  DateTime?
+  createdAt DateTime  @default(now())
+  Users     User[]    @relation("UserNotifications")
+}
+
+model Timetables {
+  id       Int              @id @default(autoincrement())
+  program  String
+  semester String
+  entries  TimetableEntry[]
+  Degree   Degree?          @relation(fields: [degreeId], references: [id])
+  degreeId Int?
+
+  @@unique([program, semester, degreeId])
+}
+
+model TimetableEntry {
+  id          Int        @id @default(autoincrement())
+  timetableId Int
+  day         String
+  time        String
+  subject     String
+  Timetable   Timetables @relation(fields: [timetableId], references: [id])
+
+  @@unique([timetableId, day, time])
+}

@@ -1,0 +1,4 @@
+login => https://pixabay.com/illustrations/architecture-hungary-eger-2661547/
+student => https://pixabay.com/vectors/boy-vintage-school-student-pupil-2026310/
+book => https://pixabay.com/vectors/books-literature-pile-study-2022464/
+avatar => https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg
